@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import 'iconos.dart';
+// import 'preguntas.dart';
+import 'quiz_brain.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
+
+QuizBrain preguntasRaras = QuizBrain();
 
 void main() => runApp(Quizzler());
 
@@ -25,6 +31,36 @@ class QuizPage extends StatefulWidget {
 }
 
 class _QuizPageState extends State<QuizPage> {
+  void checkAnswer(bool userPickedAnswer) {
+    preguntasRaras.fin() ? agregaIcono(userPickedAnswer) : mensaje();
+  }
+
+  void mensaje() {
+    Alert(context: context, title: "FIN", desc: "No hay más preguntas").show();
+  }
+
+  void agregaIcono(bool userPickedAnswer) {
+    setState(() {
+      preguntasRaras.rptaPregunta() == userPickedAnswer ? scoreKeepper.add(bien()) : scoreKeepper.add(mal());
+      preguntasRaras.sigPregunta();
+    });
+  }
+
+
+  List<Widget> scoreKeepper = [];
+
+  List<String> questions = [
+    'You can lead a cow down stairs but not up stairs.',
+    'Approximately one quarter of human bones are in the feet.',
+    'A slug\'s blood is green.',
+  ];
+
+  List<bool> rpta = [
+    false,
+    true,
+    true,
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -37,7 +73,7 @@ class _QuizPageState extends State<QuizPage> {
             padding: EdgeInsets.all(10.0),
             child: Center(
               child: Text(
-                'This is where the question text will go.',
+                preguntasRaras.textoPregunta(),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 25.0,
@@ -61,6 +97,7 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
+                checkAnswer(true);
                 //The user picked true.
               },
             ),
@@ -79,10 +116,14 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
+                checkAnswer(false);
                 //The user picked false.
               },
             ),
           ),
+        ),
+        Row(
+          children: scoreKeepper,
         ),
         //TODO: Add a Row here as your score keeper
       ],
